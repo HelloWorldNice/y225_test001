@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="cn.bdqn.mapper.EmployeeMapper">
+
+    <!--根据姓名模糊查询员工信息-->
+    <select id="queryByName" resultType="cn.bdqn.domain.Employee">
+        select
+            id,emp_name empName,sex,email,birthday,address
+        from
+            t_employee
+        where
+            emp_name like #{empName}
+    </select>
+
+    <!--根据姓名模糊查询员工信息,这种方式有问题，SQL注入问题-->
+    <select id="queryByName_2" resultType="cn.bdqn.domain.Employee">
+        select
+            id,emp_name empName,sex,email,birthday,address
+        from
+            t_employee
+        where
+            emp_name like '%${empName}%'
+    </select>
+
+    <!--根据姓名模糊查询员工信息,这种方式是最完美的-->
+    <select id="queryByName_3" resultType="Employee">
+        select
+            id,emp_name empName,sex,email,birthday,address
+        from
+            t_employee
+        where
+            emp_name like concat('%','${empName}','%')
+    </select>
+
+    <!--   添加员工     -->
+    <insert id="insert" parameterType="cn.bdqn.domain.Employee">
+         <selectKey keyColumn="id" keyProperty="id" order="AFTER" resultType="int">
+             select LAST_INSERT_ID()
+         </selectKey>
+
+         insert into
+            t_employee(emp_name,sex,email,birthday,address)
+        values
+            (#{empName},#{sex},#{email},#{birthday},#{address})
+    </insert>
+
+    <!--   添加员工,返回自增主键     -->
+    <insert id="insert_2" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
+        insert into
+        t_employee(emp_name,sex,email,birthday,address)
+        values
+        (#{empName},#{sex},#{email},#{birthday},#{address})
+    </insert>
+
+
+
+
+</mapper>
